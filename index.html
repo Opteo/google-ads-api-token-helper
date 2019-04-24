@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Refresh Token Generator (1/2)</title>
+    <meta name="keywords" content="google ads api, adwords, refresh token, access token, client id, client secret, google cloud console"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/yegor256/tacit@gh-pages/tacit-css-1.4.2.min.css" />
+</head>
+
+<body>
+    <section>
+        <header>
+            <h1>Google Ads API refresh token generator</h1>
+
+        </header>
+        <article>
+            <p>This tool is designed to help you generate a single refresh token.</p>
+
+            <p> To start, you'll need a <code>client id</code> and a <code>client secret</code>. To get these, follow <a target="_blank" href="https://developers.google.com/google-ads/api/docs/oauth/cloud-project">these instructions</a> in your <a href="https://console.cloud.google.com/apis/credentials">Google Cloud Platform</a>,
+                using the <em>Web application</em> type.</p>
+
+            <p>In the <em>Authorized redirect URIs</em> of your client, add <code id="cburl"></code> to authorise this page to receive your authorisation code. You can remove this later.
+
+            <h3>Step 1/2: Input your client id to start the OAuth flow.</h3>
+            <form action="javascript:goToPage()">
+                <fieldset>
+
+                    <label for="clientid">Your Client ID:</label>
+                    <textarea style="width:100%" name="clientid" id="clientid" placeholder="xxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com"></textarea>
+
+                    <button type="submit">Authorise via OAuth</button>
+                </fieldset>
+            </form>
+        </article>
+
+        <footer>
+            <nav>
+                <ul>
+                    <li>
+                        <small>Made by <a href="https://www.opteo.com" target="_blank">Opteo</a>. <a target="_blank" href="https://github.com/Opteo/google-ads-api-token-helper">View source.</a></small>
+                    </li>
+                </ul>
+            </nav>
+
+        </footer>
+    </section>
+
+    <script>
+        const current_url = window.location.protocol + '//' + window.location.host + '/'
+        const redirect_path = 'callback'
+
+        document.getElementById('cburl').innerHTML = current_url + redirect_path
+
+        function goToPage() {
+            const client_id = document.getElementById('clientid').value.trim();
+
+            window.location.href = "https://accounts.google.com/o/oauth2/auth?access_type=offline&approval_prompt=force&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fadwords&response_type=code&client_id=" + client_id + "&state=" + client_id + "&redirect_uri=" + current_url + redirect_path;
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Refresh Token Generator (2/2)</title>
+    <meta name="keywords" content="google ads api, adwords, refresh token, access token, client id, client secret, google cloud console"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/yegor256/tacit@gh-pages/tacit-css-1.4.2.min.css" />
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+
+<body>
+    <section>
+        <header>
+            <h1>Google Ads API refresh token generator</h1>
+        </header>
+        <article>
+            <p>You're almost done!</p>
+            <h3>Step 2/2: Input your client secret to generate your refresh token.</h3>
+            <div id="clientsecretcontainer" style="display:block;">
+                <form action="javascript:getRefreshToken()">
+                    <fieldset>
+                        <label for="clientsecret">Your client secret:</label>
+                        <textarea placeholder="xxxxxxxxxxxxxxxxxxxxxxxx" style="width:100%" id="clientsecret" name="clientsecret"></textarea>
+                    </fieldset>
+                    <button id="generatebutton" type="submit">Generate refresh token</button>
+                </form>
+            </div>
+            <div id="resultcontainer" style="display: none">
+                <fieldset>
+                    <label for="refreshtoken">Your refresh token:</label>
+                    <textarea style="width:100%" readonly id="refreshtoken" name="refreshtoken">
+
+                    </textarea>
+                </fieldset>
+                <fieldset>
+                    <label for="accesstoken">Your (temporary) access token:</label>
+                    <textarea style="width:100%" readonly id="accesstoken" name="accesstoken">
+
+                    </textarea>
+                </fieldset>
+            </div>
+            <a href="/">Start over</a>
+        </article>
+
+        <footer>
+            <nav>
+                <ul>
+                    <li>
+                        <small>Made by <a href="https://www.opteo.com" target="_blank">Opteo</a>. <a target="_blank" href="https://github.com/Opteo/google-ads-api-token-helper">View source.</a></small>
+                    </li>
+                </ul>
+            </nav>
+        </footer>
+    </section>
+
+    <script>
+        function getRefreshToken() {
+            var urlParams = new URLSearchParams(window.location.search);
+
+            const client_secret = document.getElementById('clientsecret').value.trim();
+            const redirect_uri = window.location.protocol + '//' + window.location.host + window.location.pathname
+
+            const options = {
+                url: 'https://accounts.google.com/o/oauth2/token',
+                method: 'post',
+                data: {
+                    code: urlParams.get('code'),
+                    client_id: urlParams.get('state'),
+                    client_secret,
+                    redirect_uri,
+                    grant_type: "authorization_code"
+                }
+            }
+
+            const result_div = document.getElementById('resultcontainer');
+            const refresh_token_div = document.getElementById('refreshtoken');
+            const access_token_div = document.getElementById('accesstoken');
+            const generate_button = document.getElementById('generatebutton');
+
+            axios(options).then(response => {
+                console.log(response.data)
+                refresh_token_div.value = response.data.refresh_token
+                access_token_div.value = response.data.access_token
+            }).catch((error) => {
+                console.error(error)
+                if (error && error.response && error.response.data) {
+                    result_div.innerHTML = JSON.stringify(error.response.data, null, 2)
+                }
+            })
+
+            generate_button.disabled = true
+            result_div.style.display = 'block'
+        }
+    </script>
+</body>
+
+</html>
